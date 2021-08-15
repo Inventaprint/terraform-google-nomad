@@ -162,3 +162,14 @@ variable "root_volume_disk_type" {
   type        = string
   default     = "pd-standard"
 }
+
+
+# Autoscaler configs
+
+variable "min_nomad_client_replicas" {
+  default = 2
+}
+
+variable "max_nomad_client_replicas" {
+  default = 10
+}
