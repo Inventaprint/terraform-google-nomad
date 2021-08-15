@@ -18,13 +18,17 @@ resource "google_compute_region_instance_group_manager" "nomad" {
   base_instance_name   = var.cluster_name
   region               = var.gcp_region
 
-  # Restarting all Nomad servers at the same time will result in data loss and down time. Therefore, the update strategy
-  # used to roll out a new GCE Instance Template must be a rolling update. But since Terraform does not yet support
-  # ROLLING_UPDATE, such updates must be manually rolled out for now.
-  update_strategy = var.instance_group_update_strategy
-
   target_pools = var.instance_group_target_pools
   target_size  = var.cluster_size
+
+  update_policy {
+    type                         = "PROACTIVE"
+    instance_redistribution_type = "PROACTIVE"
+    minimal_action               = "RESTART"
+    max_surge_fixed              = 1
+    max_unavailable_fixed        = 1
+    min_ready_sec                = 50
+  }
 
   version {
     instance_template  = google_compute_instance_template.nomad_private.id
